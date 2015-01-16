@@ -39,20 +39,22 @@ int main() {
 	struct timeval result;
 
 	/* Allocate 2GB, zeroed to make sure the OS actually allocates it */
-	printf("Allocating memory...\n");
+	gettimeofday(&tv1, NULL);
 	char *m = calloc(2147483648, 1);
+	gettimeofday(&tv2, NULL);
 	if (m == NULL) {
 		printf("Could not allocate memory!\n");
 		return 1;
 	}
+	timeval_subtract(&result, &tv2, &tv1);
+	printf("calloc took: %ld s %i us\n", result.tv_sec, result.tv_usec);
 
-	printf("Forking...\n");
 	gettimeofday(&tv1, NULL);
 	c = fork();
 	gettimeofday(&tv2, NULL);
 	if (c == 0) {
 		timeval_subtract(&result, &tv2, &tv1) ;
-		printf("Fork took: %ld s %i us\n", result.tv_sec, result.tv_usec);
+		printf("fork took: %ld s %i us\n", result.tv_sec, result.tv_usec);
 	}
 	if (c == -1) {
 		printf("Error forking\n");
